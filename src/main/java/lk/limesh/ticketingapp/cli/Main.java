@@ -14,7 +14,7 @@ public class Main {
 
         Customer[] customers = new Customer[10]; // Creating array of customers
         for (int i = 0; i < customers.length; i++) {
-            customers[i] = new Customer(ticketPool, 6, 5); // Rerieve tickets from the pool
+            customers[i] = new Customer(ticketPool, 6, 5); // Retrieve tickets from the pool
             Thread customerThread = new Thread(customers[i], "Customer ID-" + i);
             customerThread.start();
         }
