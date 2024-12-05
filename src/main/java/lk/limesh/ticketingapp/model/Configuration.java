@@ -1,50 +1,17 @@
 package lk.limesh.ticketingapp.model;
-import java.io.Serializable;
+import com.google.gson.Gson;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-public class Configuration implements Serializable {
+import java.io.*;
+
+@AllArgsConstructor
+@Getter
+public class Configuration {
     private int totalTickets;
     private int ticketReleaseRate;
     private int customerRetrievalRate;
+    private int maxTicketCapacity;
 
-    // Default constructor for JSON deserialization
-    public Configuration() {}
 
-    public Configuration(int totalTickets, int ticketReleaseRate, int customerRetrievalRate) {
-        this.totalTickets = totalTickets;
-        this.ticketReleaseRate = ticketReleaseRate;
-        this.customerRetrievalRate = customerRetrievalRate;
-    }
-
-    public int getTotalTickets() {
-        return totalTickets;
-    }
-
-    public void setTotalTickets(int totalTickets) {
-        this.totalTickets = totalTickets;
-    }
-
-    public int getTicketReleaseRate() {
-        return ticketReleaseRate;
-    }
-
-    public void setTicketReleaseRate(int ticketReleaseRate) {
-        this.ticketReleaseRate = ticketReleaseRate;
-    }
-
-    public int getCustomerRetrievalRate() {
-        return customerRetrievalRate;
-    }
-
-    public void setCustomerRetrievalRate(int customerRetrievalRate) {
-        this.customerRetrievalRate = customerRetrievalRate;
-    }
-
-    @Override
-    public String toString() {
-        return "Configuration{" +
-                "totalTickets= " + totalTickets +
-                ", ticketReleaseRate= " + ticketReleaseRate +
-                ", customerRetrievalRate= " + customerRetrievalRate +
-                "}";
-    }
 }
