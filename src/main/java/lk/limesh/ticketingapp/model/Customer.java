@@ -1,4 +1,4 @@
-package lk.limesh.ticketingapp.cli;
+package lk.limesh.ticketingapp.model;
 
 public class Customer implements Runnable {
     private TicketPool ticketPool;

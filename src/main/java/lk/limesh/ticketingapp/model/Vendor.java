@@ -1,4 +1,5 @@
-package lk.limesh.ticketingapp.cli;
+package lk.limesh.ticketingapp.model;
+
 import java.math.BigDecimal;
 
 public class Vendor implements Runnable {

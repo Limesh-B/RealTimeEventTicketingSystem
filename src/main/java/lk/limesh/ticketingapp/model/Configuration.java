@@ -1,4 +1,4 @@
-package lk.limesh.ticketingapp.cli;
+package lk.limesh.ticketingapp.model;
 import java.io.Serializable;
 
 public class Configuration implements Serializable {

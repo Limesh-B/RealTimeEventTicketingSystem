@@ -1,5 +1,9 @@
 package lk.limesh.ticketingapp.cli;
 
+import lk.limesh.ticketingapp.model.Customer;
+import lk.limesh.ticketingapp.model.TicketPool;
+import lk.limesh.ticketingapp.model.Vendor;
+
 public class Main {
     public static void main(String[] args) {
         // Creating a ticket pool with 10 as maximum capacity
