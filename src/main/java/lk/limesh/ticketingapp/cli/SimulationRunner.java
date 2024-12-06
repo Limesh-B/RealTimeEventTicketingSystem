@@ -1,8 +1,8 @@
 package lk.limesh.ticketingapp.cli;
 
 import lk.limesh.ticketingapp.controller.TicketPoolController;
-import lk.limesh.ticketingapp.model.Customer;
-import lk.limesh.ticketingapp.model.Vendor;
+import lk.limesh.ticketingapp.threads.Customer;
+import lk.limesh.ticketingapp.threads.Vendor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 

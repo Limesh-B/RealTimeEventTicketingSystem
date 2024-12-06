@@ -1,5 +1,7 @@
-package lk.limesh.ticketingapp.model;
+package lk.limesh.ticketingapp.threads;
 
+import lk.limesh.ticketingapp.model.Ticket;
+import lk.limesh.ticketingapp.model.TicketPool;
 import lombok.AllArgsConstructor;
 
 import java.math.BigDecimal;
