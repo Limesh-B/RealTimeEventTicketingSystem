@@ -12,7 +12,7 @@ import java.util.Queue;
 public class TicketPoolController {
 
     private static final Logger logger = LoggerFactory.getLogger(TicketPoolController.class);
-    private TicketPoolService ticketPoolService;
+    private final TicketPoolService ticketPoolService;
 
     /**
      * Constructor for dependency injection of TicketPoolService.
@@ -28,18 +28,21 @@ public class TicketPoolController {
      *              using @RequestBody.
      */
     @PostMapping("/add-ticket")
-    public synchronized void addTicket(@RequestBody Ticket ticket) {
-        while (ticketPoolService.getTickets().size() >= ticketPoolService.getMaxTicketCapacity()) {
-            try {
-                wait();
-                logger.info("Waiting for space in ticket pool...");
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e.getMessage());
+    public void addTicket(@RequestBody Ticket ticket) {
+        synchronized (ticketPoolService) {
+            while (ticketPoolService.getTickets().size() >= ticketPoolService.getMaxTicketCapacity()) {
+                try {
+                    logger.info("Waiting for space in the ticket pool...");
+                    ticketPoolService.wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException("Thread interrupted while waiting: " + e.getMessage());
+                }
             }
+            ticketPoolService.addTicket(ticket);
+            ticketPoolService.notifyAll();  // Notify all the waiting threads
+            logger.info("Ticket added by thread {}: {}", Thread.currentThread().getName(), ticket);
         }
-        ticketPoolService.addTicket(ticket);
-        notifyAll();  // Notify all the waiting threads
-        logger.info("Ticket added by: " + Thread.currentThread().getName() + " Added ticket: " + ticket);
     }
 
     /**
@@ -47,19 +50,22 @@ public class TicketPoolController {
      * @return A ticket object.
      */
     @GetMapping("/buy-ticket")
-    public synchronized Ticket buyTicket() {
-        while (ticketPoolService.getTickets().isEmpty()) {
-            try {
-                wait();
-                logger.info("Waiting for tickets to be added...");
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e.getMessage());
+    public Ticket buyTicket() {
+        synchronized (ticketPoolService) {
+            while (ticketPoolService.getTickets().isEmpty()) {
+                try {
+                    logger.info("Waiting for tickets to be added...");
+                    ticketPoolService.wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException("Thread interrupted while waiting: " + e.getMessage());
+                }
             }
+            Ticket ticket = ticketPoolService.getTicket();
+            ticketPoolService.notifyAll();  // Notify all the waiting threads
+            logger.info("Ticket bought by thread {}: {}", Thread.currentThread().getName(), ticket);
+            return ticket;
         }
-        logger.info("Ticket bought by: " + Thread.currentThread().getName() +
-                " Bought ticket: " + ticketPoolService.getTickets().peek());
-        notifyAll();  // Notify all the waiting threads
-        return ticketPoolService.getTicket();
     }
 
     /**

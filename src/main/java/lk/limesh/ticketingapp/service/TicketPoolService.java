@@ -11,31 +11,46 @@ import java.util.Queue;
 @Getter
 public class TicketPoolService {
 
-    private Queue<Ticket> tickets;  // Queue to store the Tickets
-    private int maxTicketCapacity;  // Maximum ticket capacity that can be in the TicketPool
+    private final Queue<Ticket> tickets;  // Queue to store the Tickets
+    private final int maxTicketCapacity; // Maximum ticket capacity that can be in the TicketPool
 
     /**
      * Default constructor for TicketPoolService class.
-     * Initializes the tickets Queue and sets the maxTicketCapacity.
+     * Initializes the tickets Queue and sets the maxTicketCapacity to a default value.
      */
     public TicketPoolService() {
-        tickets = new LinkedList<Ticket>();
-        maxTicketCapacity = 10;
+        this(10); // Default max capacity
     }
 
     /**
-     * Adds a ticket to the ticket pool. (Used by vendor)
-     * @param ticket: The ticket to be added to the pool.
+     * Constructor to initialize TicketPoolService with a custom maximum capacity.
+     * @param maxTicketCapacity The maximum capacity of the ticket pool.
      */
-    public void addTicket(Ticket ticket) {
+    public TicketPoolService(int maxTicketCapacity) {
+        this.tickets = new LinkedList<>();
+        if (maxTicketCapacity <= 0) {
+            throw new IllegalArgumentException("Max ticket capacity must be greater than zero.");
+        }
+        this.maxTicketCapacity = maxTicketCapacity;
+    }
+
+    /**
+     * Adds a ticket to the ticket pool if capacity is not exceeded.
+     * @param ticket The ticket to be added to the pool.
+     * @throws IllegalStateException if the ticket pool is full.
+     */
+    public synchronized void addTicket(Ticket ticket) {
+        if (tickets.size() >= maxTicketCapacity) {
+            throw new IllegalStateException("Ticket pool is full. Cannot add more tickets.");
+        }
         tickets.add(ticket);
     }
 
     /**
-     * Returns the ticket from the ticket pool. (Used by customer)
-     * @return the next ticket in the ticket pool or null if the ticket pool is empty.
+     * Retrieves and removes a ticket from the ticket pool.
+     * @return The next ticket in the ticket pool, or null if the ticket pool is empty.
      */
-    public Ticket getTicket() {
+    public synchronized Ticket getTicket() {
         return tickets.poll();
     }
 }
