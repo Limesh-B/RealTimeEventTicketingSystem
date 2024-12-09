@@ -10,23 +10,23 @@ import org.springframework.stereotype.Component;
 @Component
 public class SimulationRunner {
 
-    private final TicketPoolService ticketPoolService;
+    private final TicketPoolController ticketPool;
 
     public SimulationRunner(TicketPoolService ticketPoolService) {
-        this.ticketPoolService = ticketPoolService;
+        this.ticketPool = ticketPool;
     }
 
     public void runSimulation() {
         Vendor[] vendors = new Vendor[10]; // Creating an array of vendors
         for (int i = 0; i < vendors.length; i++) {
-            vendors[i] = new Vendor(20, 5, ticketPoolService);
+            vendors[i] = new Vendor(20, 5, ticketPool);
             Thread vendorThread = new Thread(vendors[i], "Vendor-" + i);
             vendorThread.start();
         }
 
         Customer[] customers = new Customer[10]; // Creating an array of customers
         for (int i = 0; i < customers.length; i++) {
-            customers[i] = new Customer(6, 5, ticketPoolService);
+            customers[i] = new Customer(ticketPool,6, 5);
             Thread customerThread = new Thread(customers[i], "Customer-" + i);
             customerThread.start();
         }

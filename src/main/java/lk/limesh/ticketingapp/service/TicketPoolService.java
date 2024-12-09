@@ -1,56 +1,71 @@
 package lk.limesh.ticketingapp.service;
 
 import lk.limesh.ticketingapp.model.Ticket;
+import lk.limesh.ticketingapp.model.TicketPool;
 import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.util.LinkedList;
 import java.util.Queue;
 
 @Service
 @Getter
 public class TicketPoolService {
 
-    private final Queue<Ticket> tickets;  // Queue to store the Tickets
-    private final int maxTicketCapacity; // Maximum ticket capacity that can be in the TicketPool
+    private static final Logger logger = LoggerFactory.getLogger(TicketPoolService.class);
 
-    /**
-     * Default constructor for TicketPoolService class.
-     * Initializes the tickets Queue and sets the maxTicketCapacity to a default value.
-     */
+    private final TicketPool ticketPool;
+    private final int maxTicketsCapacity;
+
     public TicketPoolService() {
-        this(10); // Default max capacity
+        this.ticketPool = TicketPool.createEmptyPool(); // Initialize with an empty pool
+        this.maxTicketsCapacity = 10;
     }
 
     /**
-     * Constructor to initialize TicketPoolService with a custom maximum capacity.
-     * @param maxTicketCapacity The maximum capacity of the ticket pool.
-     */
-    public TicketPoolService(int maxTicketCapacity) {
-        this.tickets = new LinkedList<>();
-        if (maxTicketCapacity <= 0) {
-            throw new IllegalArgumentException("Max ticket capacity must be greater than zero.");
-        }
-        this.maxTicketCapacity = maxTicketCapacity;
-    }
-
-    /**
-     * Adds a ticket to the ticket pool if capacity is not exceeded.
-     * @param ticket The ticket to be added to the pool.
-     * @throws IllegalStateException if the ticket pool is full.
+     * Adds a ticket to the ticket pool.
+     * Synchronized to handle concurrent access.
+     * @param ticket The ticket to add to the pool.
      */
     public synchronized void addTicket(Ticket ticket) {
-        if (tickets.size() >= maxTicketCapacity) {
-            throw new IllegalStateException("Ticket pool is full. Cannot add more tickets.");
+        while (ticketPool.size() >= maxTicketsCapacity) {
+            try {
+                logger.info("Waiting for space in the ticket pool...");
+                wait();
+            } catch (InterruptedException e) {
+                throw new RuntimeException("Thread interrupted while adding ticket", e);
+            }
         }
-        tickets.add(ticket);
+        ticketPool.addTicket(ticket);
+        notifyAll(); // Notify waiting threads
     }
 
     /**
-     * Retrieves and removes a ticket from the ticket pool.
-     * @return The next ticket in the ticket pool, or null if the ticket pool is empty.
+     * Retrieves and removes the next available ticket from the pool.
+     * Synchronized to handle concurrent access.
+     * @return The next ticket, or null if none are available.
      */
-    public synchronized Ticket getTicket() {
-        return tickets.poll();
+    public synchronized Ticket buyTicket() {
+        while (ticketPool.isEmpty()) {
+            try {
+                logger.info("Waiting for tickets to be added...");
+                wait();
+            } catch (InterruptedException e) {
+                throw new RuntimeException("Thread interrupted while buying ticket", e);
+            }
+        }
+        Ticket ticket = ticketPool.pollTicket();
+        notifyAll(); // Notify waiting threads
+        return ticket;
+    }
+
+    /**
+     * Method to get all available tickets in the ticket pool
+     * @return queue of tickets
+     */
+    public Queue<Ticket> getAllTickets() {
+        Queue<Ticket> tickets = ticketPool.getTickets();
+        logger.info("Retrieved all tickets via controller: " + tickets);
+        return tickets;
     }
 }

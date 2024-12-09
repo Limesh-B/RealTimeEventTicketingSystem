@@ -8,72 +8,49 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Queue;
 
 @RestController
-@RequestMapping("/api/v1/ticket-pool")  // Endpoint for ticket pool
+@RequestMapping("/api/ticket-pool")
 public class TicketPoolController {
 
-    private static final Logger logger = LoggerFactory.getLogger(TicketPoolController.class);
-    private final TicketPoolService ticketPoolService;
+    private final Logger logger = LoggerFactory.getLogger(TicketPoolController.class);
+    private TicketPoolService ticketPoolService;
 
     /**
      * Constructor for dependency injection of TicketPoolService.
-     * @param ticketPoolService: instance/object of TicketPoolService.
+     * @param ticketPoolService TicketPoolService instance.
      */
     public TicketPoolController(TicketPoolService ticketPoolService) {
         this.ticketPoolService = ticketPoolService;
     }
 
     /**
-     * Endpoint to add tickets to the ticket pool. Synchronized to handle concurrent access.
-     * @param ticket: Ticket object that will be created after deserializing the JSON data from the request body
-     *              using @RequestBody.
+     * Adds a ticket to the pool.
+     * @param ticket Ticket object deserialized from JSON request body.
      */
     @PostMapping("/add-ticket")
     public void addTicket(@RequestBody Ticket ticket) {
-        synchronized (ticketPoolService) {
-            while (ticketPoolService.getTickets().size() >= ticketPoolService.getMaxTicketCapacity()) {
-                try {
-                    logger.info("Waiting for space in the ticket pool...");
-                    ticketPoolService.wait();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    throw new RuntimeException("Thread interrupted while waiting: " + e.getMessage());
-                }
-            }
-            ticketPoolService.addTicket(ticket);
-            ticketPoolService.notifyAll();  // Notify all the waiting threads
-            logger.info("Ticket added by thread {}: {}", Thread.currentThread().getName(), ticket);
-        }
+        ticketPoolService.addTicket(ticket);
+        logger.info("Added by: " + Thread.currentThread().getName() +  " Added ticket: " + ticket);
     }
 
     /**
-     * Endpoint to buy a ticket from the ticket pool. Synchronized to handle concurrent access.
-     * @return A ticket object.
+     * Buys a ticket from the pool.
+     * @return The purchased ticket.
      */
     @GetMapping("/buy-ticket")
     public Ticket buyTicket() {
-        synchronized (ticketPoolService) {
-            while (ticketPoolService.getTickets().isEmpty()) {
-                try {
-                    logger.info("Waiting for tickets to be added...");
-                    ticketPoolService.wait();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    throw new RuntimeException("Thread interrupted while waiting: " + e.getMessage());
-                }
-            }
-            Ticket ticket = ticketPoolService.getTicket();
-            ticketPoolService.notifyAll();  // Notify all the waiting threads
-            logger.info("Ticket bought by thread {}: {}", Thread.currentThread().getName(), ticket);
-            return ticket;
-        }
+        Ticket ticket = ticketPoolService.buyTicket();
+        logger.info("Bought by: " + Thread.currentThread().getName() +  " Bought ticket: " + ticket);
+        return ticket;
     }
 
     /**
-     * Endpoint to retrieve all the tickets from the ticket pool.
-     * @return A queue of all tickets currently in the ticket pool.
+     * Retrieves all tickets currently in the pool.
+     * @return A queue containing all tickets in the pool.
      */
     @GetMapping("/get-all-tickets")
-    public Queue<Ticket> getAllTicket() {
-        return ticketPoolService.getTickets();
+    public Queue<Ticket> getAllTickets() {
+        Queue<Ticket> tickets = ticketPoolService.getAllTickets();
+        logger.info("Retrieved all tickets: " + tickets);
+        return tickets;
     }
 }
