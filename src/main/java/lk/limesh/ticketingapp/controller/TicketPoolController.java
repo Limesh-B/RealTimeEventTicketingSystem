@@ -29,7 +29,6 @@ public class TicketPoolController {
     @PostMapping("/add-ticket")
     public void addTicket(@RequestBody Ticket ticket) {
         ticketPoolService.addTicket(ticket);
-        logger.info("Added by: " + Thread.currentThread().getName() +  " Added ticket: " + ticket);
     }
 
     /**
@@ -39,7 +38,6 @@ public class TicketPoolController {
     @GetMapping("/buy-ticket")
     public Ticket buyTicket() {
         Ticket ticket = ticketPoolService.buyTicket();
-        logger.info("Bought by: " + Thread.currentThread().getName() +  " Bought ticket: " + ticket);
         return ticket;
     }
 

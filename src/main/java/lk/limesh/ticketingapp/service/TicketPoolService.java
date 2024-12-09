@@ -19,7 +19,7 @@ public class TicketPoolService {
 
     public TicketPoolService() {
         this.ticketPool = TicketPool.createEmptyPool(); // Initialize with an empty pool
-        this.maxTicketsCapacity = 10;
+        this.maxTicketsCapacity = 5;
     }
 
     /**
@@ -37,6 +37,7 @@ public class TicketPoolService {
             }
         }
         ticketPool.addTicket(ticket);
+        logger.info("Added by: " + Thread.currentThread().getName() +  " Added ticket: " + ticket);
         notifyAll(); // Notify waiting threads
     }
 
@@ -55,6 +56,7 @@ public class TicketPoolService {
             }
         }
         Ticket ticket = ticketPool.pollTicket();
+        logger.info("Bought by: " + Thread.currentThread().getName() +  " Bought ticket: " + ticket);
         notifyAll(); // Notify waiting threads
         return ticket;
     }

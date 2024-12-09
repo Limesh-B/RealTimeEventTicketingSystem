@@ -17,7 +17,7 @@ public class Ticket {
     private BigDecimal ticketPrice;
 
     public Ticket(String eventName, BigDecimal ticketPrice) {
-        this.ticketId = UUID.randomUUID().toString(); // Generate random UUID for ticket ID
+        this.ticketId = UUID.randomUUID().toString().substring(0, 8);; // Generate random UUID for ticket ID
         this.eventName = eventName;
         this.ticketPrice = ticketPrice;
     }
