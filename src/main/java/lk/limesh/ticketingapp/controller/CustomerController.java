@@ -17,13 +17,13 @@ public class CustomerController {
     }
 
     /**
-     * Endpoint to simulate a customer buying tickets.
-     * @param customerRetrievalRate Time interval (in seconds) between ticket retrievals.
-     * @param quantity Number of tickets the customer wants to retrieve.
+     * API endpoint to simulate customer ticket purchase.
+     * @param quantity Number of tickets to buy.
+     * @param retrievalRate Time interval (in seconds) between ticket retrievals.
      */
     @PostMapping("/buy-tickets")
-    public void buyTickets(@RequestParam int customerRetrievalRate, @RequestParam int quantity) {
-        logger.info("Customer request to buy {} tickets with a retrieval rate of {} seconds", quantity, customerRetrievalRate);
-        new Thread(() -> customerService.buyTickets(customerRetrievalRate, quantity)).start();
+    public void buyTickets(@RequestParam int quantity, @RequestParam int retrievalRate) {
+        logger.info("Customer ticket purchase initiated: quantity={}, retrievalRate={}", quantity, retrievalRate);
+        new Thread(() -> customerService.buyTickets(quantity, retrievalRate)).start();
     }
 }
