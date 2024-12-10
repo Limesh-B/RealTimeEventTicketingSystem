@@ -35,3 +35,8 @@ nav li {
 .nav-button:hover {
   background-color: #45a049;
 }
+
+.nav-button.active {
+  background-color: #ff5722;
+  color: #ffffff;
+}
