@@ -14,7 +14,7 @@ public class Configuration {
 
     @Override
     public String toString() {
-        return "Configuration \n===============\n\nmaxTicketCapacity=" +
+        return "\nConfiguration \n===============\n\nmaxTicketCapacity=" +
                 maxTicketCapacity + "\ntotalTickets=" + totalTickets +
                 "\nticketReleaseRate=" + ticketReleaseRate + "\ncustomerRetrievalRate=" +
                 customerRetrievalRate;

@@ -130,7 +130,7 @@ public class ConfigurationCLI {
      * @param maxTicketCapacity : Maximum ticket capacity of the ticket pool
      * @return : boolean value indicating if the input is correct or wrong | true: correct, false: wrong
      * <p>
-     * Total number of tickets shoul be less than maxTicketCapacity
+     * Total number of tickets should be less than maxTicketCapacity
      */
     private boolean inputValidation(int totalTickets, int maxTicketCapacity) {
         if (maxTicketCapacity >= totalTickets) {

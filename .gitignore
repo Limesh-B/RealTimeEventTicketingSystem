@@ -18,6 +18,8 @@ target/
 *.iws
 *.iml
 *.ipr
+src/main/resources/ticketing-system.log
+src/main/resources/config.json
 
 ### NetBeans ###
 /nbproject/private/
