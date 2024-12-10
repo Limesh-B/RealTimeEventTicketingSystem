@@ -1,54 +1,74 @@
 <div class="configuration-form">
   <h1>Configuration Form</h1>
-  <form (ngSubmit)="onSubmit()">
-    <div class="form-group">
+  <form #configForm="ngForm" (ngSubmit)="onSubmit(configForm)">
+    <div class="form-group" [class.invalid]="maxCapacityControl.invalid && maxCapacityControl.touched">
       <label for="maxCapacity">Maximum Ticket Capacity:</label>
       <input
         type="number"
         id="maxCapacity"
         [(ngModel)]="maxCapacity"
         name="maxCapacity"
+        #maxCapacityControl="ngModel"
         required
         min="1"
       />
+      <div class="error" *ngIf="maxCapacityControl.invalid && maxCapacityControl.touched">
+        <small *ngIf="maxCapacityControl.errors?.['required']">Maximum capacity is required.</small>
+        <small *ngIf="maxCapacityControl.errors?.['min']">Value must be a positive integer.</small>
+      </div>
     </div>
 
-    <div class="form-group">
+    <div class="form-group" [class.invalid]="totalTicketsControl.invalid && totalTicketsControl.touched">
       <label for="totalTickets">Total Tickets:</label>
       <input
         type="number"
         id="totalTickets"
         [(ngModel)]="totalTickets"
         name="totalTickets"
+        #totalTicketsControl="ngModel"
         required
         min="1"
       />
+      <div class="error" *ngIf="totalTicketsControl.invalid && totalTicketsControl.touched">
+        <small *ngIf="totalTicketsControl.errors?.['required']">Total tickets are required.</small>
+        <small *ngIf="totalTicketsControl.errors?.['min']">Value must be a positive integer.</small>
+      </div>
     </div>
 
-    <div class="form-group">
+    <div class="form-group" [class.invalid]="releaseRateControl.invalid && releaseRateControl.touched">
       <label for="releaseRate">Ticket Release Rate (per second):</label>
       <input
         type="number"
         id="releaseRate"
         [(ngModel)]="releaseRate"
         name="releaseRate"
+        #releaseRateControl="ngModel"
         required
         min="1"
       />
+      <div class="error" *ngIf="releaseRateControl.invalid && releaseRateControl.touched">
+        <small *ngIf="releaseRateControl.errors?.['required']">Release rate is required.</small>
+        <small *ngIf="releaseRateControl.errors?.['min']">Value must be a positive integer.</small>
+      </div>
     </div>
 
-    <div class="form-group">
+    <div class="form-group" [class.invalid]="retrievalRateControl.invalid && retrievalRateControl.touched">
       <label for="retrievalRate">Customer Retrieval Rate (per second):</label>
       <input
         type="number"
         id="retrievalRate"
         [(ngModel)]="retrievalRate"
         name="retrievalRate"
+        #retrievalRateControl="ngModel"
         required
         min="1"
       />
+      <div class="error" *ngIf="retrievalRateControl.invalid && retrievalRateControl.touched">
+        <small *ngIf="retrievalRateControl.errors?.['required']">Retrieval rate is required.</small>
+        <small *ngIf="retrievalRateControl.errors?.['min']">Value must be a positive integer.</small>
+      </div>
     </div>
 
-    <button type="submit" class="submit-button">Submit</button>
+    <button type="submit" class="submit-button" [disabled]="configForm.invalid">Submit</button>
   </form>
 </div>

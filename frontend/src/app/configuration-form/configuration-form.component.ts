@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, NgForm} from '@angular/forms';
+import {NgIf} from '@angular/common';
 
 @Component({
   selector: 'app-configuration-form',
   templateUrl: './configuration-form.component.html',
   standalone: true,
   imports: [
-    FormsModule
+    FormsModule,
+    NgIf
   ],
   styleUrls: ['./configuration-form.component.css']
 })
@@ -19,12 +21,16 @@ export class ConfigurationFormComponent {
   constructor() {}
 
   // Handle form submission
-  onSubmit(): void {
-    console.log('Configuration Submitted:');
-    console.log(`Max Capacity: ${this.maxCapacity}`);
-    console.log(`Total Tickets: ${this.totalTickets}`);
-    console.log(`Ticket Release Rate: ${this.releaseRate}`);
-    console.log(`Customer Retrieval Rate: ${this.retrievalRate}`);
-    // Add logic to send this configuration to the backend or other components
+  onSubmit(configForm: NgForm): void {
+    if (configForm.valid) {
+      console.log('Configuration Submitted:');
+      console.log(`Max Capacity: ${this.maxCapacity}`);
+      console.log(`Total Tickets: ${this.totalTickets}`);
+      console.log(`Ticket Release Rate: ${this.releaseRate}`);
+      console.log(`Customer Retrieval Rate: ${this.retrievalRate}`);
+      // Add logic to send this configuration to the backend or other components
+    } else {
+      console.error('Form is invalid');
+    }
   }
 }

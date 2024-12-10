@@ -59,3 +59,17 @@ input:focus {
 .submit-button:hover {
   background-color: #45a049;
 }
+
+.error {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.invalid input {
+  border-color: red;
+}
+
+.invalid label {
+  color: red;
+}
