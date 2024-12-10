@@ -1,0 +1,23 @@
+<div class="main-control-div">
+    <h1>Control Panel</h1>
+    <ul>
+        <li>Status: <strong>{{ isRunning ? 'Running' : 'Stopped' }}</strong></li>
+        <li>Total number of tickets available: <strong>{{ totalTickets }}</strong></li>
+        <li>Number of tickets sold: <strong>{{ ticketsSold }}</strong></li>
+        <li>Number of tickets bought: <strong>{{ ticketsBought }}</strong></li>
+    </ul>
+    <div class="button-container">
+        <button
+                class="start-button"
+                [disabled]="isRunning"
+                (click)="startApplication()">
+            Start
+        </button>
+        <button
+                class="stop-button"
+                [disabled]="!isRunning"
+                (click)="stopApplication()">
+            Stop
+        </button>
+    </div>
+</div>
