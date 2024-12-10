@@ -2,6 +2,7 @@ package lk.limesh.ticketingapp.service;
 
 import lk.limesh.ticketingapp.model.Ticket;
 import lk.limesh.ticketingapp.model.TicketPool;
+import lk.limesh.ticketingapp.controller.ConfigurationController;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,12 +15,12 @@ public class TicketPoolService {
 
     private static final Logger logger = LoggerFactory.getLogger(TicketPoolService.class);
 
-    private final TicketPool ticketPool;
-    private final int maxTicketsCapacity;
+    private TicketPool ticketPool;
+    private int maxTicketsCapacity;
 
-    public TicketPoolService() {
+    public TicketPoolService(ConfigurationController configurationController) {
         this.ticketPool = TicketPool.createEmptyPool(); // Initialize with an empty pool
-        this.maxTicketsCapacity = 5;
+        this.maxTicketsCapacity = configurationController.getMaxTicketCapacity();
     }
 
     /**

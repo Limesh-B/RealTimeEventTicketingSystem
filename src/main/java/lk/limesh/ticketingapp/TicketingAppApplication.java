@@ -1,20 +1,26 @@
 package lk.limesh.ticketingapp;
 
-import lk.limesh.ticketingapp.cli.SimulationRunner;
+import lk.limesh.ticketingapp.cli.CLIRunner;
 import org.springframework.boot.SpringApplication;
+import lk.limesh.ticketingapp.controller.ConfigurationController;
+import lk.limesh.ticketingapp.controller.TicketPoolController;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
+
 
 @SpringBootApplication
 public class TicketingAppApplication {
 
 	public static void main(String[] args) {
-		// Start the Spring application context
-		ConfigurableApplicationContext context = SpringApplication.run(TicketingAppApplication.class, args);
-
-		// Retrieve the SimulationRunner bean and start the simulation
-		SimulationRunner simulationRunner = context.getBean(SimulationRunner.class);
-		simulationRunner.runSimulation();
+		SpringApplication.run(TicketingAppApplication.class, args);
 	}
 
+	@Bean
+	public CommandLineRunner cli(ConfigurationController configurationController, TicketPoolController ticketPoolController) {
+		return args -> {
+			CLIRunner cliRunner = new CLIRunner(configurationController, ticketPoolController);
+			cliRunner.runCLI();
+		};
+	}
 }
