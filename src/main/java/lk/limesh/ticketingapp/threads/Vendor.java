@@ -3,7 +3,6 @@ package lk.limesh.ticketingapp.threads;
 import lk.limesh.ticketingapp.controller.TicketPoolController;
 import lk.limesh.ticketingapp.model.Ticket;
 import lombok.AllArgsConstructor;
-
 import java.math.BigDecimal;
 
 @AllArgsConstructor

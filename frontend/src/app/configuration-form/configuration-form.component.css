@@ -7,40 +7,57 @@
   border-radius: 10px;
   padding: 30px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+
 }
 
-h1 {
+.configuration-form h1 {
+
   text-align: center;
   color: #4772b3;
   font-size: 28px;
   margin-bottom: 20px;
-  font-family: 'Montserrat', Arial, Helvetica, sans-serif;
+
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
+.configuration-form p {
+  text-align: center;
+  font-size: 16px;
+  color: #555;
   margin-bottom: 20px;
 }
 
-label {
-  font-size: 16px;
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
   color: #333;
   margin-bottom: 8px;
-  font-weight: bold;
 }
 
-input {
+.form-group input {
+  width: 100%;
   padding: 10px;
-  font-size: 16px;
+  font-size: 14px;
   border: 1px solid #ccc;
-  border-radius: 5px;
-  transition: border-color 0.3s ease;
+  border-radius: 4px;
+  box-sizing: border-box;
+  transition: border-color 0.3s;
 }
 
-input:focus {
-  border-color: #4772b3;
+.form-group input:focus {
+  border-color: #007bff;
   outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.error-message {
+  font-size: 12px;
+  color: red;
+  margin-top: 5px;
 }
 
 .submit-button {
@@ -54,22 +71,14 @@ input:focus {
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+
 }
 
-.submit-button:hover {
-  background-color: #45a049;
+.submit-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 
-.error {
-  color: red;
-  font-size: 12px;
-  margin-top: 5px;
-}
-
-.invalid input {
-  border-color: red;
-}
-
-.invalid label {
-  color: red;
+.submit-button:hover:not(:disabled) {
+  background-color: #4e9aec;
 }
