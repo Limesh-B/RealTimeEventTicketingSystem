@@ -79,7 +79,7 @@ public class TicketPoolService {
      */
     public Queue<Ticket> getAllTickets() {
         Queue<Ticket> tickets = ticketPool.getTickets();
-        logger.info("Retrieved all tickets: " + tickets);
+//        logger.info("Retrieved all tickets: " + tickets);
         return tickets;
     }
 

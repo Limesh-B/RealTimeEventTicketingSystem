@@ -29,11 +29,11 @@ export class ControlPanelComponent implements OnInit, OnDestroy {
   /**
    * ngOnInit lifecycle hook to initialize the component.
    * Starts polling for ticket stats using RxJS interval and switchMap.
-   * The polling interval is set to 1 second (1000ms).
+   * The polling interval is set to 0.2 second (200ms).
    */
   ngOnInit(): void {
     console.log('Starting ticket stats polling...');
-    this.pollingSubscription = interval(1000)  // Poll every 1 second
+    this.pollingSubscription = interval(200)  // Poll every 0.2 second
       .pipe(switchMap(() => this.controlPanelService.getTicketStats()))  // Switch to the observable that fetches ticket stats
       .subscribe({
         next: (stats) => {  // Handle the response with the updated ticket stats
