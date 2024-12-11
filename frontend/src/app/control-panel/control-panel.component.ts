@@ -1,38 +1,55 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { ControlPanelService } from '../services/control-panel/control-panel.service';
+import {interval, Subscription, switchMap} from 'rxjs';
+import {NgStyle} from '@angular/common';
 
 @Component({
   selector: 'app-control-panel',
   templateUrl: './control-panel.component.html',
-  standalone: true,
-  styleUrls: ['./control-panel.component.css']
+  styleUrls: ['./control-panel.component.css'],
+  imports: [
+    NgStyle
+  ],
+  standalone: true
 })
-export class ControlPanelComponent {
+export class ControlPanelComponent implements OnInit, OnDestroy {
   isRunning: boolean = false; // Tracks if the application is running
-  totalTickets: number = 100; // Total number of tickets available
-  ticketsSold: number = 0; // Number of tickets sold
-  ticketsBought: number = 0; // Number of tickets bought
+  totalTickets = 0;
+  ticketsAdded = 0;
+  ticketsBought = 0;
+  private pollingSubscription?: Subscription;
 
-  // Start the application
+  controlPanelService = inject(ControlPanelService);
+
+  ngOnInit(): void {
+    console.log('Starting ticket stats polling...');
+    this.pollingSubscription = interval(1000)
+      .pipe(switchMap(() => this.controlPanelService.getTicketStats()))
+      .subscribe({
+        next: (stats) => {
+          console.log('Received ticket stats:', stats);
+          this.totalTickets = stats.totalTickets;
+          this.ticketsAdded = stats.ticketsAdded;
+          this.ticketsBought = stats.ticketsBought;
+        },
+        error: (err) => {
+          console.error('Failed to fetch ticket stats:', err);
+        },
+      });
+  }
+
   startApplication(): void {
     this.isRunning = true;
+    this.controlPanelService.start();
   }
 
-  // Stop the application
   stopApplication(): void {
     this.isRunning = false;
+    this.controlPanelService.stop();
   }
 
-  // Sell a ticket (mock implementation)
-  sellTicket(): void {
-    if (this.isRunning && this.ticketsSold < this.totalTickets) {
-      this.ticketsSold++;
-    }
-  }
-
-  // Buy a ticket (mock implementation)
-  buyTicket(): void {
-    if (this.isRunning && this.ticketsBought < this.totalTickets) {
-      this.ticketsBought++;
-    }
+  ngOnDestroy(): void {
+    // Unsubscribe from polling when the component is destroyed
+    this.pollingSubscription?.unsubscribe();
   }
 }

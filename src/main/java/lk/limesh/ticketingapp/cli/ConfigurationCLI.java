@@ -54,10 +54,10 @@ public class ConfigurationCLI {
      * Method to prompt the user to configure the system
      */
     private void prompt() {
-        promptForInput("Enter Maximum Ticket Capacity: ", configurationController::setMaxTicketCapacity/*Is a method reference, it refers to a method without invoking it*/, false);
-        promptForInput("Enter Total Tickets per vendor: ", configurationController::setTotalTickets, true);
-        promptForInput("Enter Ticket Release Rate: ", configurationController::setTicketReleaseRate, false);
-        promptForInput("Enter Customer Retrieval Rate: ", configurationController::setCustomerRetrievalRate, false);
+        promptForInput("Enter Maximum Ticket Capacity: ", configurationController::setMaxTicketCapacity/*Is a method reference, it refers to a method without invoking it*/);
+        promptForInput("Enter Total Tickets per vendor: ", configurationController::setTotalTickets);
+        promptForInput("Enter Ticket Release Rate: ", configurationController::setTicketReleaseRate);
+        promptForInput("Enter Customer Retrieval Rate: ", configurationController::setCustomerRetrievalRate);
 
         logger.info("\nConfiguration Added Successfully!");
         System.out.print("\n>>> Press Enter to continue... <<<");
@@ -72,7 +72,7 @@ public class ConfigurationCLI {
      * @param setterMethod  : Set method of the relevant input of configuration
      * @param flag          : Flag variable to access specific method to validate total ticket amount
      */
-    private void promptForInput(String promptMessage, Consumer<Integer> setterMethod/*Allows to send a method as a parameter*/, boolean flag) {
+    private void promptForInput(String promptMessage, Consumer<Integer> setterMethod/*Allows to send a method as a parameter*/) {
         // Loops until user provides correct input
         while (true) {
             // Prompts user
@@ -81,26 +81,11 @@ public class ConfigurationCLI {
                 int number = userInput.nextInt();
                 userInput.nextLine(); // Consume the newline character
                 // flag to check of the incoming value is "Total Ticket"
-                if (flag) {
-                    // Validate valid input range
-                    if (inputValidation(number)) {
-                        if (inputValidation(number, configurationController.getMaxTicketCapacity())) {
-                            // used to access the method passed as a parameter
-                            setterMethod.accept(number);
-                            return;
-                        } else {
-                            System.out.println("\nEnter number less than max ticket capacity.\n");
-                        }
-                    } else {
-                        System.out.println("\nEnter a positive integer.\n");
-                    }
+                if (inputValidation(number)) {
+                    setterMethod.accept(number);
+                    return;
                 } else {
-                    if (inputValidation(number)) {
-                        setterMethod.accept(number);
-                        return;
-                    } else {
-                        System.out.println("\nEnter a positive integer.\n");
-                    }
+                    System.out.println("\nEnter a positive integer.\n");
                 }
             } else {
                 System.out.println("\nEnter an integer.\n");
@@ -122,19 +107,4 @@ public class ConfigurationCLI {
         return false;
     }
 
-    /**
-     * Method to specifically validate total ticket value
-     *
-     * @param totalTickets      : User input for total number of tickets per vendor
-     * @param maxTicketCapacity : Maximum ticket capacity of the ticket pool
-     * @return : boolean value indicating if the input is correct or wrong | true: correct, false: wrong
-     * <p>
-     * Total number of tickets should be less than maxTicketCapacity
-     */
-    private boolean inputValidation(int totalTickets, int maxTicketCapacity) {
-        if (maxTicketCapacity >= totalTickets) {
-            return true;
-        }
-        return false;
-    }
 }

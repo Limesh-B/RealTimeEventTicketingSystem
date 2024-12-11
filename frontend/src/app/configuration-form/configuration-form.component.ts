@@ -1,9 +1,11 @@
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms'; // For Template-driven Forms
-import { ReactiveFormsModule } from '@angular/forms'; // For Reactive Forms (if needed)
-import { CommonModule } from '@angular/common'; // CommonModule for Angular components
+import {Component, inject} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {ReactiveFormsModule} from '@angular/forms';
+import {CommonModule} from '@angular/common';
+import {ConfigurationFormService} from '../services/configuration-form/configuration-form.service';
+import {SubmissionService} from '../services/submission/submission.service';
+import {Configuration} from '../models/configuration';
 
-import {NgIf} from '@angular/common';
 
 @Component({
   selector: 'app-configuration-form',
@@ -22,7 +24,32 @@ export class ConfigurationFormComponent {
   releaseRate: number = 10;
   retrievalRate: number = 5;
 
-  constructor() {}
+  configuration: Configuration = {
+    maxTicketCapacity: this.maxCapacity,
+    totalTickets: this.totalTickets,
+    ticketReleaseRate: this.releaseRate,
+    customerRetrievalRate: this.retrievalRate,
+  };
+
+  ngOnInit(): void {
+    this.configService.getConfig().subscribe({
+      next: (response) => {
+        console.log('Configuration retrieved:', response);
+        this.maxCapacity = response.maxTicketCapacity;
+        this.totalTickets = response.totalTickets;
+        this.releaseRate = response.ticketReleaseRate;
+        this.retrievalRate = response.customerRetrievalRate;
+      },
+      error: (error) => {
+        console.error('Error retrieving configuration:', error);
+      }
+    });
+  }
+
+  constructor(private configService: ConfigurationFormService, private submissionService: SubmissionService) {
+
+  }
+
 
   validatePositiveNumber(event: any, field: String): void {
     const value = event.target.value;
@@ -36,10 +63,21 @@ export class ConfigurationFormComponent {
 
   // Handle form submission
   onSubmit(): void {
-    console.log('Configuration Submitted:');
-    console.log('Max Capacity: ${this.maxCapacity}');
-    console.log('Total Tickets: ${this.totalTickets}');
-    console.log('Ticket Release Rate: ${this.releaseRate}');
-    console.log('Customer Retrieval Rate: ${this.retrievalRate}');
+    this.configuration = {
+      maxTicketCapacity: this.maxCapacity,
+      totalTickets: this.totalTickets,
+      ticketReleaseRate: this.releaseRate,
+      customerRetrievalRate: this.retrievalRate,
+    };
+
+    this.configService.addConfig(this.configuration).subscribe(
+      (response) => {
+        console.log('Configuration added successfully', response);
+        this.submissionService.setSubmitted(true);
+      },
+      (error) => {
+        console.error('Error adding configuration', error);
+      }
+    )
   }
 }

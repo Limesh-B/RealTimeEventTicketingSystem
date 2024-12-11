@@ -1,23 +1,20 @@
 <div class="main-control-div">
-    <h1>Control Panel</h1>
-    <ul>
-        <li>Status: <strong>{{ isRunning ? 'Running' : 'Stopped' }}</strong></li>
-        <li>Total number of tickets available: <strong>{{ totalTickets }}</strong></li>
-        <li>Number of tickets sold: <strong>{{ ticketsSold }}</strong></li>
-        <li>Number of tickets bought: <strong>{{ ticketsBought }}</strong></li>
-    </ul>
-    <div class="button-container">
-        <button
-                class="start-button"
-                [disabled]="isRunning"
-                (click)="startApplication()">
-            Start
-        </button>
-        <button
-                class="stop-button"
-                [disabled]="!isRunning"
-                (click)="stopApplication()">
-            Stop
-        </button>
-    </div>
+  <h1>Control Panel</h1>
+  <ul>
+    <li id="run-stat">
+      <span class="status-label">Status:</span>
+      <span
+        [ngStyle]="{'color': isRunning ? 'green' : 'red'}"
+        class="status-value">
+        {{ isRunning ? 'Running' : 'Stopped' }}
+      </span>
+    </li>
+    <li>Total number of tickets: {{ totalTickets }}</li>
+    <li>Number of tickets sold: {{ ticketsAdded }}</li>
+    <li>Number of tickets bought: {{ ticketsBought }}</li>
+  </ul>
+  <div>
+    <button id="start" (click)="startApplication()">Start</button>
+    <button id="stop" (click)="stopApplication()">Stop</button>
+  </div>
 </div>

@@ -15,8 +15,10 @@ public class TicketPoolService {
 
     private static final Logger logger = LoggerFactory.getLogger(TicketPoolService.class);
 
-    private TicketPool ticketPool;
+    private final TicketPool ticketPool;
     private int maxTicketsCapacity;
+    private int ticketsSold = 0;
+    private int ticketsBought = 0;
 
     public TicketPoolService(ConfigurationController configurationController) {
         this.ticketPool = TicketPool.createEmptyPool(); // Initialize with an empty pool
@@ -29,14 +31,15 @@ public class TicketPoolService {
      * @param ticket The ticket to add to the pool.
      */
     public synchronized void addTicket(Ticket ticket) {
-        while (ticketPool.size() >= maxTicketsCapacity) {
+        while (ticketPool.getTickets().size() >= this.maxTicketsCapacity) {
             try {
                 logger.info("Waiting for space in the ticket pool...");
                 wait();
             } catch (InterruptedException e) {
-                throw new RuntimeException("Thread interrupted while adding ticket", e);
+                logger.error("Thread interrupted while adding ticket");
             }
         }
+        ticketsSold++;
         ticketPool.addTicket(ticket);
         logger.info("Added by: " + Thread.currentThread().getName() +  " Added ticket: " + ticket);
         notifyAll(); // Notify waiting threads
@@ -48,14 +51,15 @@ public class TicketPoolService {
      * @return The next ticket, or null if none are available.
      */
     public synchronized Ticket buyTicket() {
-        while (ticketPool.isEmpty()) {
+        while (ticketPool.getTickets().isEmpty()) {
             try {
                 logger.info("Waiting for tickets to be added...");
                 wait();
             } catch (InterruptedException e) {
-                throw new RuntimeException("Thread interrupted while buying ticket", e);
+                logger.error("Thread interrupted while buying ticket");
             }
         }
+        ticketsBought++;
         Ticket ticket = ticketPool.pollTicket();
         logger.info("Bought by: " + Thread.currentThread().getName() +  " Bought ticket: " + ticket);
         notifyAll(); // Notify waiting threads
@@ -68,7 +72,15 @@ public class TicketPoolService {
      */
     public Queue<Ticket> getAllTickets() {
         Queue<Ticket> tickets = ticketPool.getTickets();
-        logger.info("Retrieved all tickets via controller: " + tickets);
+        logger.info("Retrieved all tickets: " + tickets);
         return tickets;
+    }
+
+    public int getTotalTickets() {
+        return this.getAllTickets().size();
+    }
+
+    public int getTicketsBought() {
+        return ticketsBought;
     }
 }

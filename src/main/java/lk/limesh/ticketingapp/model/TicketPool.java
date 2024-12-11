@@ -43,12 +43,4 @@ public class TicketPool {
         return tickets.poll();
     }
 
-
-    public synchronized boolean isEmpty() {
-        return tickets.isEmpty();
-    }
-
-    public synchronized int size() {
-        return tickets.size();
-    }
 }

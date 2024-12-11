@@ -24,6 +24,17 @@ public class ConfigurationService {
         this.gson = gson;
     }
 
+    public void addConfiguration(Configuration configuration) {
+        this.configuration = configuration;
+        saveToFile();
+        logger.info("Configuration added through post request");
+        viewConfig();
+    }
+
+    public Configuration sendConfiguration() {
+        return configuration;
+    }
+
     @PostConstruct
     private void initialize() {
         if (!loadFromFile()) {
@@ -71,7 +82,7 @@ public class ConfigurationService {
 
     // Creates a default configuration
     private void createDefaultConfiguration() {
-        this.configuration = new Configuration(1000, 500, 10, 15);  // Example default values
+        this.configuration = new Configuration(500, 20, 2, 2);  // Example default values
     }
 
     // Load configuration from file

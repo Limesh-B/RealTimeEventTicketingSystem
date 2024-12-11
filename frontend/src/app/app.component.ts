@@ -1,16 +1,23 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import {ControlPanelComponent} from './control-panel/control-panel.component';
-import {HeaderComponent} from './header/header.component';
-import {ConfigurationFormComponent} from './configuration-form/configuration-form.component';
+import { HeaderComponent } from './header/header.component';
+import {SubmissionService} from './services/submission/submission.service';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ControlPanelComponent, HeaderComponent, ConfigurationFormComponent],
+  imports: [RouterOutlet, HeaderComponent, CommonModule],
   templateUrl: './app.component.html',
   standalone: true,
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'TicketingApp';
+  isSubmitted: boolean = false;
+
+  constructor(private submissionService: SubmissionService) {
+    // Subscribe to the submission state
+    this.submissionService.submitted$.subscribe((submitted) => {
+      this.isSubmitted = submitted;
+    });
+  }
 }

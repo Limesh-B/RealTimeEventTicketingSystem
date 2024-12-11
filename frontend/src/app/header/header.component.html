@@ -1,12 +1,12 @@
 <header>
   <nav>
-    <ul>
-      <li>
-        <button class="nav-button" routerLink="/control-panel" routerLinkActive="active">Control Panel</button>
-      </li>
-      <li>
-        <button class="nav-button" routerLink="/configuration-form" routerLinkActive="active">Configuration Form</button>
-      </li>
+    <ul [ngClass]="{'blocked': !isSubmitted}">
+      <li [routerLink]="isSubmitted ? '/' : null"
+          [class.disabled]="!isSubmitted"
+          (click)="preventNavigation($event)">Configuration Form</li>
+      <li [routerLink]="isSubmitted ? '/control' : null"
+          [class.disabled]="!isSubmitted"
+          (click)="preventNavigation($event)">Control Panel</li>
     </ul>
   </nav>
 </header>

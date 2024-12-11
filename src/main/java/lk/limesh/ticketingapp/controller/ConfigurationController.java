@@ -1,13 +1,15 @@
 package lk.limesh.ticketingapp.controller;
 
+import lk.limesh.ticketingapp.model.Configuration;
 import lombok.Data;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import lk.limesh.ticketingapp.service.ConfigurationService;
 /**
  * ConfigurationController handles the configuration settings for the event ticketing system.
  */
 @RestController
-@Data
+@RequestMapping("/api/config")
 public class ConfigurationController {
 
     /**
@@ -23,6 +25,18 @@ public class ConfigurationController {
      */
     public ConfigurationController(ConfigurationService configurationService) {
         this.configurationService = configurationService;
+    }
+    //! Comment these
+    @PostMapping("/add-config")
+    public ResponseEntity<?> addConfig(@RequestBody Configuration configuration) {
+        this.configurationService.addConfiguration(configuration);
+        return ResponseEntity.ok(configuration);
+    }
+
+    @GetMapping("/get-config")
+    public ResponseEntity<Configuration> getConfig() {
+        Configuration config= this.configurationService.sendConfiguration();
+        return ResponseEntity.ok(config);
     }
 
     /**

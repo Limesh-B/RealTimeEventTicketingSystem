@@ -1,6 +1,6 @@
 .configuration-form {
   max-width: 600px; /* Limit the width for a centered form */
-  margin: 50px auto; /* Center the form */
+  margin: 30px auto; /* Center the form */
   font-family: 'Arial', sans-serif;
   background-color: #f9f9f9; /* Light gray background */
   border: 2px solid #ccc;

@@ -5,6 +5,8 @@ import lk.limesh.ticketingapp.service.TicketPoolService;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 import java.util.Queue;
 
 @RestController
@@ -48,7 +50,15 @@ public class TicketPoolController {
     @GetMapping("/get-all-tickets")
     public Queue<Ticket> getAllTickets() {
         Queue<Ticket> tickets = ticketPoolService.getAllTickets();
-        logger.info("Retrieved all tickets: " + tickets);
         return tickets;
+    }
+
+    @GetMapping("/ticket-stats")
+    public Map<String, Integer> getTicketStats() {
+        return Map.of(
+                "totalTickets", ticketPoolService.getTotalTickets(),
+                "ticketsAdded", ticketPoolService.getTicketsSold(),
+                "ticketsBought", ticketPoolService.getTicketsBought()
+        );
     }
 }
