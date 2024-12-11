@@ -5,12 +5,13 @@ import lk.limesh.ticketingapp.model.Ticket;
 import lombok.AllArgsConstructor;
 import java.math.BigDecimal;
 
-@AllArgsConstructor
+@AllArgsConstructor // Lombok annotation to generate a constructor with all arguments
 public class Vendor implements Runnable {
     private int totalTickets; // Tickets the vendor will release
     private int ticketReleaseRate; // Time interval (in seconds) to release a ticket
     private TicketPoolController ticketPool; // Shared resource for managing tickets
 
+    // The run method is executed when the vendor thread starts
     @Override
     public void run() {
         for (int i = 0; i < totalTickets; i++) {

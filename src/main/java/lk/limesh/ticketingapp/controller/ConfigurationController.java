@@ -1,38 +1,51 @@
 package lk.limesh.ticketingapp.controller;
 
 import lk.limesh.ticketingapp.model.Configuration;
-import lombok.Data;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import lk.limesh.ticketingapp.service.ConfigurationService;
 /**
- * ConfigurationController handles the configuration settings for the event ticketing system.
+ * ConfigurationController handles the configuration settings for the ticketing system.
+ * It acts as a bridge between the client requests (API endpoints) and the business logic (ConfigurationService).
  */
 @RestController
-@RequestMapping("/api/config")
+@RequestMapping("/api/config") // Maps all requests starting with "/api/config" to this controller
 public class ConfigurationController {
 
     /**
      * The ConfigurationService instance that provides the logic for managing the system's configuration.
+     * Dependency Injection is used to provide the service.
      */
     private final ConfigurationService configurationService;
 
     /**
      * Constructor for ConfigurationController.
-     * Initializes the controller with a ConfigurationService instance with the use of dependency injection
-     *
+     * Initializes the controller with a ConfigurationService instance through Dependency Injection.
      * @param configurationService the ConfigurationService to manage ticketing system settings
      */
     public ConfigurationController(ConfigurationService configurationService) {
         this.configurationService = configurationService;
     }
-    //! Comment these
+
+    /**
+     * API endpoint to add a new configuration to the system.
+     * The client sends a Configuration object, which is processed and saved.
+     *
+     * @param configuration The configuration object to be added
+     * @return ResponseEntity with status OK and the added configuration
+     */
     @PostMapping("/add-config")
     public ResponseEntity<?> addConfig(@RequestBody Configuration configuration) {
         this.configurationService.addConfiguration(configuration);
         return ResponseEntity.ok(configuration);
     }
 
+    /**
+     * API endpoint to retrieve the current configuration from the system.
+     * The method fetches the configuration from the ConfigurationService and returns it.
+     *
+     * @return ResponseEntity containing the configuration object
+     */
     @GetMapping("/get-config")
     public ResponseEntity<Configuration> getConfig() {
         Configuration config= this.configurationService.sendConfiguration();
@@ -123,11 +136,12 @@ public class ConfigurationController {
         configurationService.saveToFile();
     }
 
+    /**
+     * Attempts to load the configuration from a file through the ConfigurationService.
+     *
+     * @return true if configuration was successfully loaded, otherwise false
+     */
     public boolean loadConfiguration() {
-        if (configurationService.loadFromFile()) {
-            return true;
-        } else {
-            return false;
-        }
+        return configurationService.loadFromFile();
     }
 }

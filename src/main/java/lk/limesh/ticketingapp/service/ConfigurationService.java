@@ -10,20 +10,37 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+/**
+ * The ConfigurationService class contains the business logic for the Configuration.
+ */
 @Service
 public class ConfigurationService {
 
     private final Logger logger = LoggerFactory.getLogger(ConfigurationService.class);
-    private final Gson gson;
-    private Configuration configuration;
+    private final Gson gson;  // Gson instance for JSON processing
+    private Configuration configuration;  // Holds the current configuration
 
+    // Injected file path from application properties for reading and writing configuration
     @Value("${configuration.file.path}")
     private String filePath;  // Injected file path from application properties
 
+    /**
+     * Constructor for ConfigurationService.
+     * Initializes the service with a Gson instance for JSON processing.
+     *
+     * @param gson the Gson instance used to serialize and deserialize configuration data
+     */
     public ConfigurationService(Gson gson) {
         this.gson = gson;
     }
 
+    /**
+     * Adds a new configuration and saves it to a file.
+     * This method is used to update the system's configuration with a new configuration object from the frontend.
+     * After updating the configuration, it is saved to the file, and the configuration is viewed.
+     *
+     * @param configuration the new configuration to be added
+     */
     public void addConfiguration(Configuration configuration) {
         this.configuration = configuration;
         saveToFile();
@@ -31,10 +48,21 @@ public class ConfigurationService {
         viewConfig();
     }
 
+    /**
+     * Retrieves the current configuration.
+     *
+     * @return the current configuration object
+     */
     public Configuration sendConfiguration() {
         return configuration;
     }
 
+    /**
+     * @PostConstruct means it will be executed automatically by Spring after the bean has been
+     * constructed and its dependencies have been injected.
+     * The method attempts to load the configuration from a file. If loading fails,
+     * it creates a default configuration and saves it to the file.
+     */
     @PostConstruct
     private void initialize() {
         if (!loadFromFile()) {
@@ -43,6 +71,8 @@ public class ConfigurationService {
             saveToFile();
         }
     }
+
+    // Getters and Setters for configuration properties
 
     public int getMaxTicketCapacity() {
         return configuration.getMaxTicketCapacity();
@@ -76,16 +106,25 @@ public class ConfigurationService {
         configuration.setCustomerRetrievalRate(customerRetrievalRate);
     }
 
+    /**
+     * Logs the current configuration.
+     * This method is used to log the details of the current configuration for debugging or monitoring.
+     */
     public void viewConfig() {
         logger.info(configuration.toString());
     }
 
-    // Creates a default configuration
+    // Creates a default configuration in cli
     private void createDefaultConfiguration() {
         this.configuration = new Configuration(500, 20, 2, 2);  // Example default values
     }
 
-    // Load configuration from file
+    /**
+     * Loads the configuration from a json file.
+     * This method reads the configuration file, parses it, and sets the configuration object.
+     *
+     * @return true if the configuration is loaded successfully, false otherwise
+     */
     public boolean loadFromFile() {
         try (Reader reader = new FileReader(filePath)) {
             this.configuration = gson.fromJson(reader, Configuration.class);
@@ -96,7 +135,12 @@ public class ConfigurationService {
         }
     }
 
-    // Save configuration to file
+    /**
+     * Saves the current configuration to a json file.
+     * This method serializes the configuration object into a JSON format and writes it to the file.
+     *
+     * @return true if the configuration is saved successfully, false otherwise
+     */
     public boolean saveToFile() {
         try {
             File file = new File(filePath);

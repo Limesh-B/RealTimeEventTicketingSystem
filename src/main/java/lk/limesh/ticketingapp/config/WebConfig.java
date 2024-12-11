@@ -7,7 +7,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    // Configure Cross-Origin Resource Sharing (CORS)
+    /**
+     * Configures Cross-Origin Resource Sharing (CORS) settings.
+     * This method allows the server to specify which external domains are permitted to access
+     * the resources on the server.
+     *
+     * @param registry The CORS registry to configure
+     */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // Allow CORS for all endpoints

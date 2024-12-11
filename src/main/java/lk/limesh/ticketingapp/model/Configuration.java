@@ -2,12 +2,13 @@ package lk.limesh.ticketingapp.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
+@AllArgsConstructor // Lombok annotation to generate a constructor with all arguments
+@NoArgsConstructor // Lombok annotation to generate a no-argument constructor
+@Getter // Lombok annotation to generate getter methods for all fields
+@Setter  // Lombok annotation to generate setter methods for all fields
 public class Configuration {
 
+    // @JsonProperty annotation specifies that this field should be serialized/deserialized in JSON
     @JsonProperty
     private int maxTicketCapacity;
     @JsonProperty
@@ -17,6 +18,7 @@ public class Configuration {
     @JsonProperty
     private int customerRetrievalRate;
 
+    // toString method to represent the Configuration object as a formatted string.
     @Override
     public String toString() {
         return "\nConfiguration \n===============\n\nmaxTicketCapacity=" +

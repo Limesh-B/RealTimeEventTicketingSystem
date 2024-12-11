@@ -10,16 +10,22 @@ import org.springframework.stereotype.Service;
 import java.util.Queue;
 
 @Service
-@Getter
+@Getter  // Lombok annotation to generate getter methods for all fields
 public class TicketPoolService {
 
     private static final Logger logger = LoggerFactory.getLogger(TicketPoolService.class);
 
-    private final TicketPool ticketPool;
-    private int maxTicketsCapacity;
-    private int ticketsSold = 0;
-    private int ticketsBought = 0;
+    private final TicketPool ticketPool;  // The ticket pool object that manages all tickets.
+    private int maxTicketsCapacity;  // Maximum capacity of the ticket pool.
+    private int ticketsSold = 0;  // Number of tickets sold (added to the pool).
+    private int ticketsBought = 0;  // Number of tickets bought (removed from the pool).
 
+    /**
+     * Constructor for TicketPoolService.
+     * This constructor uses Dependency Injection to provide an instance of ConfigurationController.
+     *
+     * @param configurationController the ConfigurationController for fetching system configuration.
+     */
     public TicketPoolService(ConfigurationController configurationController) {
         this.ticketPool = TicketPool.createEmptyPool(); // Initialize with an empty pool
         this.maxTicketsCapacity = configurationController.getMaxTicketCapacity();
@@ -60,7 +66,7 @@ public class TicketPoolService {
             }
         }
         ticketsBought++;
-        Ticket ticket = ticketPool.pollTicket();
+        Ticket ticket = ticketPool.pollTicket();  // Remove and retrieve the ticket from the pool
         logger.info("Bought by: " + Thread.currentThread().getName() +  " Bought ticket: " + ticket);
         notifyAll(); // Notify waiting threads
         return ticket;
@@ -68,6 +74,7 @@ public class TicketPoolService {
 
     /**
      * Method to get all available tickets in the ticket pool
+     *
      * @return queue of tickets
      */
     public Queue<Ticket> getAllTickets() {
@@ -76,11 +83,14 @@ public class TicketPoolService {
         return tickets;
     }
 
+    /**
+     * Retrieves the total number of tickets available in the pool.
+     *
+     * @return The number of tickets in the pool.
+     */
     public int getTotalTickets() {
         return this.getAllTickets().size();
     }
 
-    public int getTicketsBought() {
-        return ticketsBought;
-    }
+//    public int getTicketsBought() {return ticketsBought;}
 }

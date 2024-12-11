@@ -1,15 +1,13 @@
 package lk.limesh.ticketingapp.model;
 
-
 import lombok.Getter;
-
 import java.util.LinkedList;
 import java.util.Queue;
 
 
-@Getter
+@Getter // Lombok annotation to generate getter methods for all fields
 public class TicketPool {
-    private final Queue<Ticket> tickets;
+    private final Queue<Ticket> tickets;  // A queue to hold Ticket objects
 
     /**
      * Method to create a new ticket pool
