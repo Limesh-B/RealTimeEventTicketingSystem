@@ -1,4 +1,5 @@
 package lk.limesh.ticketingapp.model;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @AllArgsConstructor
@@ -7,9 +8,13 @@ import lombok.*;
 @Setter
 public class Configuration {
 
+    @JsonProperty
     private int maxTicketCapacity;
+    @JsonProperty
     private int totalTickets;
+    @JsonProperty
     private int ticketReleaseRate;
+    @JsonProperty
     private int customerRetrievalRate;
 
     @Override

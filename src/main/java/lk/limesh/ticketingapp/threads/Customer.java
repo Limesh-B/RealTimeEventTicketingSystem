@@ -6,18 +6,24 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class Customer implements Runnable {
-    private final TicketPoolController ticketPool;
+    private TicketPoolController ticketPool;
     private int customerRetrievalRate; // Time interval (in seconds) between ticket retrievals
     private int quantity; // Number of tickets the customer wants to retrieve
 
     @Override
     public void run() {
         for (int i = 0; i < quantity; i++) {
+            if (Thread.currentThread().isInterrupted()) {
+                System.out.println("Customer " + Thread.currentThread().getName() + " was interrupted");
+                break;
+            }
             Ticket ticket = ticketPool.buyTicket();
             try {
                 Thread.sleep(customerRetrievalRate * 250L);
             } catch (InterruptedException e) {
-                throw new RuntimeException(e.getMessage());
+                System.out.println("Customer " + Thread.currentThread().getName() + " was interrupted");
+                Thread.currentThread().interrupt();
+                break;
             }
         }
     }

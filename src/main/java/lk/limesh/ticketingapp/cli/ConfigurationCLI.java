@@ -25,7 +25,6 @@ public class ConfigurationCLI {
      * Method to run config CLI
      */
     public void run() {
-        //TODO: instead of load config, use a variable
         if (configurationController.loadConfiguration()) {
             while (true) {
                 System.out.println();
