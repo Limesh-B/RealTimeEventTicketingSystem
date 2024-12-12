@@ -3,6 +3,9 @@ package lk.limesh.ticketingapp.service;
 import lk.limesh.ticketingapp.Repository.TicketRepository;
 import lk.limesh.ticketingapp.model.Ticket;
 import lk.limesh.ticketingapp.controller.ConfigurationController;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +19,10 @@ public class TicketPoolService {
     private static final Logger logger = LoggerFactory.getLogger(TicketPoolService.class);
 
     private final TicketRepository ticketRepository;
+    private final Lock lock = new ReentrantLock();
+    private final Condition notFull = lock.newCondition();
+    private final Condition notEmpty = lock.newCondition();
+
     private int maxTicketsCapacity;  // Maximum capacity of the ticket pool.
     private int ticketsSold = 0;  // Number of tickets sold (added to the pool).
     private int ticketsBought = 0;  // Number of tickets bought (removed from the pool).
@@ -34,51 +41,61 @@ public class TicketPoolService {
 
     /**
      * Adds a ticket to the ticket pool.
-     * Synchronized to handle concurrent access.
+     * Uses locks to handle concurrent access.
      *
      * @param ticket The ticket to add to the pool.
      */
-    public synchronized void addTicket(Ticket ticket) {
-        while (ticketRepository.count() >= this.maxTicketsCapacity) {
-            try {
-                logger.info("Waiting for space in the ticket pool...");
-                wait();
-            } catch (InterruptedException e) {
-                logger.error("Thread interrupted while adding ticket");
-                Thread.currentThread().interrupt();
-                return;
+    public void addTicket(Ticket ticket) {
+        lock.lock();
+        try {
+            while (ticketRepository.count() >= this.maxTicketsCapacity) {
+                try {
+                    logger.info("Waiting for space in the ticket pool...");
+                    notFull.await();
+                } catch (InterruptedException e) {
+                    logger.error("Thread interrupted while adding ticket");
+                    Thread.currentThread().interrupt();
+                    return;
+                }
             }
+            ticketsSold++;
+            ticketRepository.save(ticket);
+            logger.info("Added by: " + Thread.currentThread().getName() + " Added ticket: " + ticket);
+            notEmpty.signalAll(); // Notify waiting threads
+        } finally {
+            lock.unlock();
         }
-        ticketsSold++;
-        ticketRepository.save(ticket);
-        logger.info("Added by: " + Thread.currentThread().getName() + " Added ticket: " + ticket);
-        notifyAll(); // Notify waiting threads
     }
 
     /**
      * Retrieves and removes the next available ticket from the pool.
-     * Synchronized to handle concurrent access.
+     * Uses locks to handle concurrent access.
      *
      * @return The next ticket, or null if none are available.
      */
-    public synchronized Ticket buyTicket() {
-        while (ticketRepository.count() == 0) {
-            try {
-                logger.info("Waiting for tickets to be added...");
-                wait();
-            } catch (InterruptedException e) {
-                logger.error("Thread interrupted while buying ticket");
-                Thread.currentThread().interrupt();
-                return null;
+    public Ticket buyTicket() {
+        lock.lock();
+        try {
+            while (ticketRepository.count() == 0) {
+                try {
+                    logger.info("Waiting for tickets to be added...");
+                    notEmpty.await();
+                } catch (InterruptedException e) {
+                    logger.error("Thread interrupted while buying ticket");
+                    Thread.currentThread().interrupt();
+                    return null;
+                }
             }
+            ticketsBought++;
+            List<Ticket> tickets = ticketRepository.findAll();
+            Ticket ticket = tickets.get(tickets.size() - 1);  // Retrieve the last ticket added to the pool
+            ticketRepository.delete(ticket);
+            logger.info("Bought by: " + Thread.currentThread().getName() + " Bought ticket: " + ticket);
+            notFull.signalAll(); // Notify waiting threads
+            return ticket;
+        } finally {
+            lock.unlock();
         }
-        ticketsBought++;
-        List<Ticket> tickets = ticketRepository.findAll();
-        Ticket ticket = tickets.get(tickets.size() - 1);  // Retrieve the last ticket added to the pool
-        ticketRepository.delete(ticket);
-        logger.info("Bought by: " + Thread.currentThread().getName() + " Bought ticket: " + ticket);
-        notifyAll(); // Notify waiting threads
-        return ticket;
     }
 
     /**
