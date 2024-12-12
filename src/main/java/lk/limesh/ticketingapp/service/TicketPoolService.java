@@ -25,6 +25,7 @@ public class TicketPoolService {
      * This constructor uses Dependency Injection to provide an instance of ConfigurationController.
      *
      * @param configurationController the ConfigurationController for fetching system configuration.
+     * @param ticketRepository the TicketRepository for performing CRUD operations on tickets.
      */
     public TicketPoolService(ConfigurationController configurationController, TicketRepository ticketRepository) {
         this.ticketRepository = ticketRepository;
@@ -81,9 +82,9 @@ public class TicketPoolService {
     }
 
     /**
-     * Method to get all available tickets in the ticket pool
+     * Gets all available tickets in the ticket pool.
      *
-     * @return List of tickets
+     * @return List of tickets currently in the pool.
      */
     public List<Ticket> getAllTickets() {
         return ticketRepository.findAll();
@@ -92,7 +93,7 @@ public class TicketPoolService {
     /**
      * Retrieves the total number of tickets available in the pool.
      *
-     * @return The number of tickets in the pool.
+     * @return The number of tickets currently in the pool.
      */
     public int getTotalTickets() {
         return this.getAllTickets().size();

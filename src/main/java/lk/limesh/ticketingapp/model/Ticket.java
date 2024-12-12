@@ -44,6 +44,11 @@ public class Ticket {
     )
     private BigDecimal ticketPrice;
 
+    /**
+     * Constructor for creating a Ticket with event name and ticket price.
+     * @param eventName The name of the event.
+     * @param ticketPrice The price of the ticket.
+     **/
     public Ticket(String eventName, BigDecimal ticketPrice) {
         this.eventName = eventName;
         this.ticketPrice = ticketPrice;
