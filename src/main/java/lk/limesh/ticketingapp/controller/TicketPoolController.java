@@ -5,6 +5,8 @@ import lk.limesh.ticketingapp.service.TicketPoolService;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
@@ -47,9 +49,8 @@ public class TicketPoolController {
      * @return A queue containing all tickets in the pool.
      */
     @GetMapping("/get-all-tickets")
-    public Queue<Ticket> getAllTickets() {
-        Queue<Ticket> tickets = ticketPoolService.getAllTickets();
-        return tickets;
+    public List<Ticket> getAllTickets() {
+        return ticketPoolService.getAllTickets();
     }
 
     /**

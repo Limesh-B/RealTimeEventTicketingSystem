@@ -22,7 +22,7 @@ public class Vendor implements Runnable {
             Ticket ticket = new Ticket("Event " + i,new BigDecimal(1000.00));
             ticketPool.addTicket(ticket);
             try {
-                Thread.sleep(ticketReleaseRate * 250L);
+                Thread.sleep(ticketReleaseRate * 1000L);
 
             } catch (InterruptedException e) {
                 System.out.println("Vendor " + Thread.currentThread().getName() + " was interrupted during sleep");

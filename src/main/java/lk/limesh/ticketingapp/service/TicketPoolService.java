@@ -1,5 +1,6 @@
 package lk.limesh.ticketingapp.service;
 
+import lk.limesh.ticketingapp.Repository.TicketRepository;
 import lk.limesh.ticketingapp.model.Ticket;
 import lk.limesh.ticketingapp.model.TicketPool;
 import lk.limesh.ticketingapp.controller.ConfigurationController;
@@ -7,6 +8,8 @@ import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Queue;
 
 @Service
@@ -15,7 +18,7 @@ public class TicketPoolService {
 
     private static final Logger logger = LoggerFactory.getLogger(TicketPoolService.class);
 
-    private final TicketPool ticketPool;  // The ticket pool object that manages all tickets.
+    private final TicketRepository ticketRepository;  // The ticket pool object that manages all tickets.
     private int maxTicketsCapacity;  // Maximum capacity of the ticket pool.
     private int ticketsSold = 0;  // Number of tickets sold (added to the pool).
     private int ticketsBought = 0;  // Number of tickets bought (removed from the pool).
@@ -26,8 +29,8 @@ public class TicketPoolService {
      *
      * @param configurationController the ConfigurationController for fetching system configuration.
      */
-    public TicketPoolService(ConfigurationController configurationController) {
-        this.ticketPool = TicketPool.createEmptyPool(); // Initialize with an empty pool
+    public TicketPoolService(ConfigurationController configurationController, TicketRepository ticketRepository) {
+        this.ticketRepository = ticketRepository;
         this.maxTicketsCapacity = configurationController.getMaxTicketCapacity();
     }
 
@@ -37,7 +40,8 @@ public class TicketPoolService {
      * @param ticket The ticket to add to the pool.
      */
     public synchronized void addTicket(Ticket ticket) {
-        while (ticketPool.getTickets().size() >= this.maxTicketsCapacity) {
+        long currentTicketCount = ticketRepository.count();
+        while (currentTicketCount >= this.maxTicketsCapacity) { // change
             try {
                 logger.info("Waiting for space in the ticket pool...");
                 wait();
@@ -46,7 +50,7 @@ public class TicketPoolService {
             }
         }
         ticketsSold++;
-        ticketPool.addTicket(ticket);
+        ticketRepository.save(ticket);
         logger.info("Added by: " + Thread.currentThread().getName() +  " Added ticket: " + ticket);
         notifyAll(); // Notify waiting threads
     }
@@ -57,7 +61,8 @@ public class TicketPoolService {
      * @return The next ticket, or null if none are available.
      */
     public synchronized Ticket buyTicket() {
-        while (ticketPool.getTickets().isEmpty()) {
+        List<Ticket> tickets = ticketRepository.findAll();
+        while (tickets.isEmpty()) {
             try {
                 logger.info("Waiting for tickets to be added...");
                 wait();
@@ -66,7 +71,8 @@ public class TicketPoolService {
             }
         }
         ticketsBought++;
-        Ticket ticket = ticketPool.pollTicket();  // Remove and retrieve the ticket from the pool
+        Ticket ticket = tickets.get(tickets.size()-1);  // Remove and retrieve the ticket from the pool
+        ticketRepository.delete(ticket);
         logger.info("Bought by: " + Thread.currentThread().getName() +  " Bought ticket: " + ticket);
         notifyAll(); // Notify waiting threads
         return ticket;
@@ -77,10 +83,8 @@ public class TicketPoolService {
      *
      * @return queue of tickets
      */
-    public Queue<Ticket> getAllTickets() {
-        Queue<Ticket> tickets = ticketPool.getTickets();
-//        logger.info("Retrieved all tickets: " + tickets);
-        return tickets;
+    public List<Ticket> getAllTickets() {
+        return ticketRepository.findAll();
     }
 
     /**

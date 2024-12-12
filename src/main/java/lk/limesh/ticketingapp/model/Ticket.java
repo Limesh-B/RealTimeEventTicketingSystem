@@ -1,23 +1,50 @@
 package lk.limesh.ticketingapp.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-// @Data annotation automatically generates boilerplate code for getters, setters and toString() method
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
+@Entity(name = "Ticket")
+@Table(name = "ticket")
 public class Ticket {
-    private String ticketId;
-    // @JsonProperty annotation specifies that this field should be serialized/deserialized as "event-name" in JSON
+
+    @Id
+    @Column(
+            name = "ticket_id",
+            updatable = false,
+            nullable = false
+    )
+
+    @SequenceGenerator(
+            name = "ticket_id",
+            sequenceName = "ticket_id"
+    )
+
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "ticket_id"
+    )
+    private Long ticketId;
+
     @JsonProperty("event-name")
+    @Column(
+            name = "event_name",
+            columnDefinition = "TEXT"
+    )
     private String eventName;
-    // The @JsonProperty annotation specifies that this field should be serialized/deserialized as "ticket-price" in JSON
+
     @JsonProperty("ticket-price")
+    @Column(
+            name = "ticket_price"
+    )
     private BigDecimal ticketPrice;
 
     public Ticket(String eventName, BigDecimal ticketPrice) {
-        this.ticketId = UUID.randomUUID().toString().substring(0, 8);; // Generate random UUID for ticket ID
         this.eventName = eventName;
         this.ticketPrice = ticketPrice;
     }
