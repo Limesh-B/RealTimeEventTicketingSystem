@@ -42,27 +42,23 @@ public class SimulationRunner {
      * It generates 10 vendors and 10 customers, each of which is assigned a separate thread to run concurrently.
      */
     public void runSimulation() {
-        // Create an array to hold 10 Vendor objects
         Vendor[] vendors = new Vendor[10];
-        vendorThreads = new Thread[10];  // Array to hold vendor threads
-        // Loop through the vendor array, creating and starting a thread for each vendor
+        vendorThreads = new Thread[10];
         for (int i = 0; i < vendors.length; i++) {
-            // Initialize each Vendor with configuration values and ticket pool
             vendors[i] = new Vendor(configuration.getTotalTickets(), configuration.getTicketReleaseRate(), ticketPool);
             vendorThreads[i] = new Thread(vendors[i], "Vendor ID : " + i);
-            vendorThreads[i].start(); // Start the Vendor threads
+            vendorThreads[i].start();
+            logger.info("Vendor thread " + vendorThreads[i].getName() + " started");
         }
-
-        // Create an array to hold 10 Customer objects
         Customer[] customers = new Customer[10];
-        customerThreads = new Thread[10];  // Array to hold customer threads
-        // Loop through the customer array, creating and starting a thread for each customer
+        customerThreads = new Thread[10];
         for (int i = 0; i < customers.length; i++) {
             customers[i] = new Customer(ticketPool, configuration.getCustomerRetrievalRate(), configuration.getTotalTickets());
             customerThreads[i] = new Thread(customers[i], "Customer ID : " + i);
-            customerThreads[i].start(); // Start the Customer threads
+            customerThreads[i].start();
+            logger.info("Customer thread " + customerThreads[i].getName() + " started");
         }
-        logger.info("Simulation started");
+        logger.info("Simulation started with 10 vendor and 10 customer threads");
     }
 
     /**
@@ -73,15 +69,15 @@ public class SimulationRunner {
         for (Thread vendorThread : vendorThreads) {
             if (vendorThread != null && vendorThread.isAlive()) {
                 vendorThread.interrupt();  // Interrupt the vendor thread to stop it
+                logger.info("Vendor thread " + vendorThread.getName() + " interrupted");
             }
         }
 
         for (Thread customerThread : customerThreads) {
             if (customerThread != null && customerThread.isAlive()) {
                 customerThread.interrupt();  // Interrupt the customer thread to stop it
+                logger.info("Customer thread " + customerThread.getName() + " interrupted");
             }
         }
-
-
     }
 }
