@@ -16,7 +16,6 @@ public class Vendor implements Runnable {
     public void run() {
         for (int i = 0; i < totalTickets; i++) {
             if (Thread.currentThread().isInterrupted()) {
-                System.out.println("Vendor " + Thread.currentThread().getName() + " was interrupted");
                 break;
             }
             Ticket ticket = new Ticket("Event " + i,new BigDecimal(1000.00));
@@ -25,7 +24,6 @@ public class Vendor implements Runnable {
                 Thread.sleep(ticketReleaseRate * 250L);
 
             } catch (InterruptedException e) {
-                System.out.println("Vendor " + Thread.currentThread().getName() + " was interrupted during sleep");
                 Thread.currentThread().interrupt();
                 break;
             }
